@@ -32,6 +32,7 @@ public class SliceRepositoryTest {
     @Autowired
     private ServerDao serverDao;
 
+    @SuppressWarnings("FieldCanBeLocal")
     private Slice slice1, slice2, slice3;
     private Server server;
 
@@ -62,7 +63,6 @@ public class SliceRepositoryTest {
         assertTrue(s1);
         assertFalse(none);
 
-
         sliceDao.deleteById(slice1.getId());
         s1 = sliceDao.existsById(slice1.getId());
 
@@ -75,15 +75,11 @@ public class SliceRepositoryTest {
         Server s = serverDao.findById(server.getId());
         List<Slice> slices = sliceDao.findByServerOrderByEndSliceDesc(s);
 
-
-
         List<Long> endSlice = new ArrayList<>();
-        for(Slice slice : slices){
+        for (Slice slice : slices){
             endSlice.add(slice.getEndSlice());
         }
-
         boolean sorted = Ordering.natural().reverse().isOrdered(endSlice);
-
         assertTrue(sorted);
     }
 

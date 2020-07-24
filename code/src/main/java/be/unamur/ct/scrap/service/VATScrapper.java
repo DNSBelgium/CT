@@ -97,9 +97,9 @@ public class VATScrapper {
          *  Find a better way to stop the thread
          *  The Thread.interrupt() method doesn't seem to work
          */
-        if (threadPool.getVATScrapperExecutor().isShutdown()) {
-            throw new InterruptedException();
-        }
+//        if (threadPool.getVATScrapperExecutor().isShutdown()) {
+//            throw new InterruptedException();
+//        }
 
         //  Check if it is needed to visit URL
         if (depth < 0 || visited.contains(url)) {
@@ -114,6 +114,7 @@ public class VATScrapper {
         try {
             document = Jsoup.parse(url, timeout);
         } catch (Exception e) {
+            // TODO debug log ?
             return null;
         }
 
@@ -126,7 +127,7 @@ public class VATScrapper {
             return null;
         }
 
-
+        // TODO: compile regex only once
         Pattern r = Pattern.compile(patternVAT);
         Matcher m = r.matcher(text);
 
@@ -168,6 +169,11 @@ public class VATScrapper {
         // If link points to same sub-domain, follow it
         String hostBase = new String();
         String hostLink = new String();
+
+        // TODO: try to understand this code.
+        //  Why not give host as a parameter instead of extracting it from the url again and again
+        // TODO: make method to extract 'host' (actually domain name ?)  from URL
+        //  goal is to find inner links. Check if JSoup has method for this ? How done in fake shop detector ?
 
         try {
             String host = url.toURI().getHost();

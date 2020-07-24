@@ -6,6 +6,8 @@ import be.unamur.ct.download.model.LogEntry;
 
 /**
  * Thread class to launch the decode process for a downloaded certificate
+ *
+ * TODO: use ExecutorService and Runnable or Callable or ...
  */
 public class DecodeEntryThread extends Thread {
 

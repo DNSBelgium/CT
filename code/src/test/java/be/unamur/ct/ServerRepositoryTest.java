@@ -23,6 +23,7 @@ public class ServerRepositoryTest {
     @Autowired
     private ServerDao serverDao;
 
+    @SuppressWarnings("FieldCanBeLocal")
     private Server srv1, srv2;
 
     @Before

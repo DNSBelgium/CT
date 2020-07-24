@@ -15,9 +15,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -63,13 +63,10 @@ public class CertificateRepositoryTest {
     @Test
     public void testFindAllOrderedById(){
         List<Certificate> found = certificateDao.findAllByOrderByIdAsc(PageRequest.of(0, Integer.MAX_VALUE));
-
-
-        assertTrue(found.size() == 4);
-        assertTrue(found.get(0).getId() < found.get(1).getId());
+        assertThat(found).hasSize(4);
+        assertThat(found.get(0).getId()).isLessThan(found.get(1).getId());
 
         Certificate firstFound = found.get(0);
-
         assertThat(firstFound.getSubject()).isEqualTo("www.test.com");
         assertTrue(firstFound.isVatSearched());
     }
@@ -78,17 +75,12 @@ public class CertificateRepositoryTest {
     @Test
     public void testFindAllVATNotNullOrderedById(){
         List<Certificate> found = certificateDao.findAllByVATNotNullOrderByIdAsc(PageRequest.of(0, Integer.MAX_VALUE));
-
-
-        assertTrue(found.size() == 2);
-
+        assertThat(found.size()).isEqualTo(2);
         for(Certificate c : found){
             assertNotNull(c.getVAT());
             assertTrue(c.isVatSearched());
         }
-
         assertTrue(found.get(0).getId() < found.get(1).getId());
-
         assertThat(found.get(0).getVAT()).isEqualTo("BE0123456789");
         assertThat(found.get(1).getVAT()).isEqualTo("BE0987654321");
     }
@@ -102,13 +94,11 @@ public class CertificateRepositoryTest {
         int vatNotNullAndSearched = certificateDao.countByVATIsNotNullAndVatSearched(true);
         int vatNotNullAndNotSearched = certificateDao.countByVATIsNotNullAndVatSearched(false);
 
+        assertThat(vatNullAndNotSearched).isEqualTo(1);
+        assertThat(vatNullAndSearched).isEqualTo(1);
 
-        assertTrue(vatNullAndNotSearched == 1);
-        assertTrue(vatNullAndSearched == 1);
-
-        assertTrue(vatNotNullAndNotSearched == 0);
-        assertTrue(vatNotNullAndSearched == 2);
-
+        assertThat(vatNotNullAndNotSearched).isEqualTo(0);
+        assertThat(vatNotNullAndSearched).isEqualTo(2);
     }
 
 
@@ -116,13 +106,6 @@ public class CertificateRepositoryTest {
     public void testFindByVatSearched(){
         List<Certificate> vatSearched = certificateDao.findByVatSearched(true);
         List<Certificate> vatNotSearched = certificateDao.findByVatSearched(false);
-
-
-        assertTrue(vatNotSearched.size() == 1);
-        assertTrue(vatSearched.size() == 3);
-
-        for(Certificate c : vatSearched){
-            assertFalse(vatNotSearched.contains(c));
-        }
+        assertThat(vatSearched).isNotIn(vatNotSearched);
     }
 }

@@ -44,8 +44,8 @@ public class ServerService {
     @Autowired
     private ThreadPool threadPool;
 
-    private ExecutorService decoder = threadPool.getDecodeExecutor();
-    private Logger logger = LoggerFactory.getLogger(ServerService.class);
+    private final ExecutorService decoder = ThreadPool.getDecodeExecutor();
+    private final static Logger logger = LoggerFactory.getLogger(ServerService.class);
 
 
     public ServerService() {}
@@ -66,7 +66,7 @@ public class ServerService {
         Iterable<Slice> slices = sliceDao.findByServerOrderByStartSlice(server);
         for (Slice s : slices) {
             SearchSliceThread search = new SearchSliceThread(s, this);
-            threadPool.getSliceExecutor().execute(search);
+            ThreadPool.getSliceExecutor().execute(search);
         }
     }
 

@@ -98,6 +98,8 @@ public class CertificateService {
         //  Create graph data for issuer
         List<Object[]> result = certificateDao.distinctIssuer();
 
+        // TODO: seems a strange data structure. Why not create a Class to represent this data ?
+
         return createPairForGraph(result);
     }
 
@@ -132,6 +134,9 @@ public class CertificateService {
      * the Object[] which have the lower value for the BigInteger are aggregated under the category "Other", a the end
      * of the array.
      *
+     * TODO:  why is this strange data structure used ?  Is it just data shuffling for displaying purposes ? Ie view logic ?
+     * TODO:  Seems to be a way to cap the info to be displayed
+     *
      * Example
      * -------
      *
@@ -146,6 +151,7 @@ public class CertificateService {
         ArrayList<Pair<String, BigInteger>> count = new ArrayList<>();
 
         for (Object[] o : result) {
+            // TODO: use other data structure and avoid casting
             count.add(new Pair<>((String) o[0], (BigInteger) o[1]));
         }
 

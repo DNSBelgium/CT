@@ -86,8 +86,12 @@ public class DecodeService {
                                 + "Cannot get domain name");
                     }
 
+                    // TODO cns == null is always false
+                    // TODO: check if exception is properly handled upstream
+
                     // Check TLD
                     if (cns == null || !(cns.endsWith(".be") || cns.endsWith(".vlaanderen") || cns.endsWith(".brussels"))) {
+                        // TODO: should we really throw an exception every time when domain is not in one of our TLD's
                         throw new NotAValidDomainException("createDomainFromCert(X509CertificateHolder) in DomainService: "
                                 + cn + " is not a valid domain");
                     }
@@ -103,8 +107,14 @@ public class DecodeService {
                     certificate = certificateDao.save(certificate);
 
                     // NEXT STEP - Scrap for VAT
+                    // TODO: avoid static method ?
+                    // TODO: better decouple CT scraping from VAT scraping (by keeping state for each task in the DB ?)
+                    // TODO: use Runnable or similar instead of manually creating new threads
+
                     threadPool.getVATScrapperExecutor().execute(new VATScrapperThread(certificate, vatScrapper));
                 } catch (NotAValidDomainException e) {
+                    // TODO
+                    // logger.warn("NotAValidDomainException: {}", e.getMessage());
                 }
 
             } catch (IOException e) {
@@ -183,6 +193,7 @@ public class DecodeService {
                     String cns = IETFUtils.valueToString(cn.getFirst().getValue());
                     return cns;
                 } catch (IOException e) {
+                    // TODO why catch an IndexOutOfBoundsException ??
                 } catch (IndexOutOfBoundsException e) {
                 }
             } catch (Exception e) {

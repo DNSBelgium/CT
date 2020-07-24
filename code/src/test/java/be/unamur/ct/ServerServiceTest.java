@@ -4,20 +4,17 @@ package be.unamur.ct;
 import be.unamur.ct.download.model.Server;
 import be.unamur.ct.download.service.ServerService;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.FileCopyUtils;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
@@ -39,8 +36,6 @@ public class ServerServiceTest {
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(options().port(8080));
 
-    private Logger logger = LoggerFactory.getLogger(ServerService.class);
-
     private Server server;
 
     @Before
@@ -52,12 +47,11 @@ public class ServerServiceTest {
         server.setId(1);
 
         //  Creating small test web server to serve web pages to scrap
-        InputStream simpleInput = getClass().getClassLoader().getResourceAsStream("json/sth.json");
-        String simpleHtml = new String(IOUtils.toByteArray(simpleInput), Charset.forName("UTF-8"));
+        byte[] body = FileCopyUtils.copyToByteArray( new ClassPathResource("json/sth.json").getInputStream());
 
         wireMockRule.stubFor(get(urlEqualTo("/ct/v1/get-sth"))
                 .willReturn(aResponse()
-                        .withBody(simpleHtml)
+                        .withBody(body)
                         .withHeader("Content-Type", "application/json")
                 )
         );
@@ -68,7 +62,6 @@ public class ServerServiceTest {
     public void testCheckSize(){
         long size;
         size = serverService.checkSize(server);
-
         assertThat(size).isEqualTo(3);
     }
 

@@ -13,6 +13,10 @@ import java.util.concurrent.Executors;
  * Class handling multiples ExecutorServices used in the application.
  * This class uses the Singleton design pattern to prevent multiples instances of the same ExecutorService to be created.
  *
+ * TODO:  why use Singleton in a Spring application ??  It is already a spring bean so ... ?
+ * TODO:  Thread classes in this project are actually used as a Runnable => better to make them of Runnable type
+ * TODO:  Replace with Spring abstraction for executor ??
+ *
  * @see ExecutorService
  */
 @Component
@@ -22,7 +26,7 @@ public class ThreadPool {
     static private ExecutorService decodeExecutor = null;
     static private ExecutorService VATScrapperExecutor = null;
 
-    static private Logger logger = LoggerFactory.getLogger(ThreadPool.class);
+    static private final Logger logger = LoggerFactory.getLogger(ThreadPool.class);
 
     static private Integer threadsDecode;
     static private Integer threadsSlice;

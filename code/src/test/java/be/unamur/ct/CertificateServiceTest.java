@@ -2,6 +2,7 @@ package be.unamur.ct;
 
 import be.unamur.ct.data.dao.CertificateDao;
 import be.unamur.ct.data.service.CertificateService;
+import org.assertj.core.util.Lists;
 import org.javatuples.Pair;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +16,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,6 +38,7 @@ public class CertificateServiceTest {
     @MockBean
     private CertificateDao certificateDao;
 
+    @SuppressWarnings("SpringJavaAutowiredMembersInspection")
     @Autowired
     private CertificateService certificateService;
 
@@ -65,40 +69,17 @@ public class CertificateServiceTest {
 
     @Test
     public void testVatGraphData(){
-
         ArrayList<Integer> result = certificateService.vatGraphData();
-
-
-        ArrayList<Integer> expected = new ArrayList<>();
-        expected.add(2);
-        expected.add(1);
-        expected.add(1);
-
-        assertThat(result.size()).isEqualTo(expected.size());
-
-        for(int i = 0; i < result.size(); i++){
-            assertThat(result.get(i)).isEqualTo(expected.get(i));
-        }
-
+        assertThat(result).isEqualTo(Lists.newArrayList(2,1,1));
     }
 
 
     @Test
     public void testIssuerGraphData(){
-
         Pair<ArrayList<BigInteger>, ArrayList<String>> result = certificateService.issuerGraphData();
-
-
-        ArrayList<BigInteger> num = new ArrayList<>();
-        num.add(BigInteger.valueOf(3));
-        num.add(BigInteger.valueOf(1));
-
-        ArrayList<String> labels = new ArrayList<>();
-        labels.add("Alice");
-        labels.add("Bob");
-
+        ArrayList<BigInteger> num = bigIntegerList(3,1);
+        ArrayList<String> labels = Lists.newArrayList("Alice", "Bob");
         Pair<ArrayList<BigInteger>, ArrayList<String>> expected = new Pair<>(num, labels);
-
         checkList(result, expected);
     }
 
@@ -106,18 +87,8 @@ public class CertificateServiceTest {
     @Test
     public void testAlgorithmGraphData(){
         Pair<ArrayList<BigInteger>, ArrayList<String>> result = certificateService.algorithmGraphData();
-
-
-        ArrayList<BigInteger> num = new ArrayList<>();
-        num.add(BigInteger.valueOf(3));
-        num.add(BigInteger.valueOf(1));
-
-        ArrayList<String> labels = new ArrayList<>();
-        labels.add("Alg1");
-        labels.add("Alg2");
-
-        Pair<ArrayList<BigInteger>, ArrayList<String>> expected = new Pair<>(num, labels);
-
+        ArrayList<BigInteger> num = Lists.newArrayList(BigInteger.valueOf(3), BigInteger.valueOf(1));
+        Pair<ArrayList<BigInteger>, ArrayList<String>> expected = new Pair<>(num, Lists.newArrayList("Alg1", "Alg2"));
         checkList(result, expected);
 
     }
@@ -125,12 +96,18 @@ public class CertificateServiceTest {
     private void checkList(Pair<ArrayList<BigInteger>, ArrayList<String>> result,
                            Pair<ArrayList<BigInteger>, ArrayList<String>> expected) {
 
-        assertThat(result.getValue0().size()).isEqualTo(expected.getValue0().size());
-        assertThat(result.getValue1().size()).isEqualTo(expected.getValue1().size());
-
-        for (int i = 0; i < result.getValue0().size(); i++) {
-            assertThat(result.getValue0().get(i)).isEqualTo(expected.getValue0().get(i));
-            assertThat(result.getValue1().get(i)).isEqualTo(expected.getValue1().get(i));
-        }
+        assertThat(result.getValue0()).isEqualTo(expected.getValue0());
+        assertThat(result.getValue1()).isEqualTo(expected.getValue1());
     }
+
+    private ArrayList<BigInteger> bigIntegerList(long ... values) {
+        return Arrays.stream(values).mapToObj(BigInteger::valueOf).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    @Test
+    public void testList() {
+        List<BigInteger> x = bigIntegerList(1, 5, 8);
+        System.out.println("x = " + x);
+    }
+
 }
