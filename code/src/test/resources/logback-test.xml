@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <!-- Turning down the wiremock logging -->
+    <logger name="com.github.tomakehurst.wiremock" level="WARN"/>
+    <logger name="wiremock.org" level="ERROR"/>
+    <logger name="org.eclipse.jetty" level="ERROR"/>
+    <logger name="WireMock" level="WARN"/>
+
+    <logger name="be.unamur" level="INFO"/>
+    <logger name="be.unamur.ct.scrap.service" level="INFO"/>
+
+    <root level="warn" >
+    </root>
+
+</configuration>

@@ -1,28 +1,28 @@
 package be.unamur.ct.scrap.thread;
 
 import be.unamur.ct.decode.model.Certificate;
-import be.unamur.ct.scrap.service.VATScrapper;
+import be.unamur.ct.scrap.service.VatScrapingService;
 
 
 /**
- * Thread class to start the scrapping of a single website
+ * Runnable to start the scraping of a single website
  */
-public class VATScrapperThread extends Thread {
-    private Certificate cert;
-    private VATScrapper vatScrapper;
+public class VatSearch implements Runnable {
 
+    private final Certificate cert;
+    private final VatScrapingService vatScrapingService;
 
     /**
      * Constructor
      *
      * @author Jules Dejaeghere
      * @param cert        Certificate of the website to start scrapping for
-     * @param vatScrapper Reference to the VATScrapper to use
+     * @param vatScrapingService Reference to the VATScrapper to use
      * @see Certificate
      */
-    public VATScrapperThread(Certificate cert, VATScrapper vatScrapper) {
+    public VatSearch(Certificate cert, VatScrapingService vatScrapingService) {
         this.cert = cert;
-        this.vatScrapper = vatScrapper;
+        this.vatScrapingService = vatScrapingService;
     }
 
 
@@ -33,7 +33,7 @@ public class VATScrapperThread extends Thread {
      */
     @Override
     public void run() {
-        vatScrapper.scrap(cert);
+        vatScrapingService.scrape(cert);
     }
 
 }

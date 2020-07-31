@@ -1,6 +1,6 @@
 package be.unamur.ct.scrap.thread;
 
-import be.unamur.ct.scrap.service.VATScrapper;
+import be.unamur.ct.scrap.service.VatScrapingService;
 
 
 /**
@@ -8,16 +8,16 @@ import be.unamur.ct.scrap.service.VATScrapper;
  */
 public class ResumeVATScrapThread extends Thread {
 
-    private VATScrapper vatScrapper;
+    private final VatScrapingService vatScrapingService;
 
     /**
      * Constructor
      *
      * @author Jules Dejaeghere
-     * @param vatScrapper Reference to the VATScrapper to use
+     * @param vatScrapingService Reference to the VATScrapper to use
      */
-    public ResumeVATScrapThread(VATScrapper vatScrapper) {
-        this.vatScrapper = vatScrapper;
+    public ResumeVATScrapThread(VatScrapingService vatScrapingService) {
+        this.vatScrapingService = vatScrapingService;
     }
 
 
@@ -28,6 +28,6 @@ public class ResumeVATScrapThread extends Thread {
      */
     @Override
     public void run() {
-        vatScrapper.resumeVatScrapping();
+        vatScrapingService.resumeVatScrapping();
     }
 }

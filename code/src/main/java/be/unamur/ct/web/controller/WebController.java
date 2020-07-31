@@ -7,15 +7,13 @@ import be.unamur.ct.decode.model.Certificate;
 import be.unamur.ct.download.model.Server;
 import be.unamur.ct.download.service.ServerService;
 import be.unamur.ct.download.thread.ScanLogThread;
-import be.unamur.ct.scrap.service.VATScrapper;
+import be.unamur.ct.scrap.service.VatScrapingService;
 import be.unamur.ct.scrap.thread.ResumeVATScrapThread;
 import be.unamur.ct.thread.ThreadPool;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,7 +41,7 @@ public class WebController {
     private CertificateService certificateService;
 
     @Autowired
-    private VATScrapper vatScrapper;
+    private VatScrapingService vatScrapingService;
 
     @Autowired
     private ServerService serverService;
@@ -245,7 +243,7 @@ public class WebController {
      */
     @GetMapping("/resumevat")
     public String resumeVat() {
-        vatScrapper.resumeVatScrapping();
+        vatScrapingService.resumeVatScrapping();
         return "redirect:/status";
     }
 
@@ -306,7 +304,7 @@ public class WebController {
 
         if (myServer != null) {
             ScanLogThread scan = new ScanLogThread(myServer, serverService);
-            threadPool.getServerExecutor().execute(scan);
+            ThreadPool.getServerExecutor().execute(scan);
         }
 
         return "redirect:/serverList";
@@ -323,8 +321,8 @@ public class WebController {
     @GetMapping("/relaunchvat")
     public String relaunchvat() {
 
-        ResumeVATScrapThread thread = new ResumeVATScrapThread(vatScrapper);
-        threadPool.getServerExecutor().execute(thread);
+        ResumeVATScrapThread thread = new ResumeVATScrapThread(vatScrapingService);
+        ThreadPool.getServerExecutor().execute(thread);
 
         return "redirect:/";
     }

@@ -12,6 +12,8 @@ import java.util.List;
 public interface CertificateDao extends JpaRepository<Certificate, Integer> {
     List<Certificate> findAllByOrderByIdAsc(Pageable pageable);
 
+    List<Certificate> findAllByVATNotNull();
+
     List<Certificate> findAllByVATNotNullOrderByIdAsc(Pageable pageable);
 
     List<Certificate> findByVatSearched(boolean value);

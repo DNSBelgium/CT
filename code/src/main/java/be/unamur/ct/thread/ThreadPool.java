@@ -41,7 +41,7 @@ public class ThreadPool {
      */
     @Value("${threads-decode}")
     public void setThreadsDecode(Integer value) {
-        this.threadsDecode = value;
+        threadsDecode = value;
     }
 
 
@@ -53,7 +53,7 @@ public class ThreadPool {
      */
     @Value("${threads-slice}")
     public void setThreadsSlice(Integer value) {
-        this.threadsSlice = value;
+        threadsSlice = value;
     }
 
 
@@ -65,7 +65,7 @@ public class ThreadPool {
      */
     @Value("${threads-scrap}")
     public void setThreadsScrap(Integer value) {
-        this.threadsScrap = value;
+        threadsScrap = value;
     }
 
     /**

@@ -4,8 +4,8 @@ import be.unamur.ct.data.dao.CertificateDao;
 import be.unamur.ct.decode.exceptions.NotAValidDomainException;
 import be.unamur.ct.decode.model.Certificate;
 import be.unamur.ct.download.model.LogEntry;
-import be.unamur.ct.scrap.service.VATScrapper;
-import be.unamur.ct.scrap.thread.VATScrapperThread;
+import be.unamur.ct.scrap.service.VatScrapingService;
+import be.unamur.ct.scrap.thread.VatSearch;
 import be.unamur.ct.thread.ThreadPool;
 import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.style.BCStyle;
@@ -35,14 +35,14 @@ public class DecodeService {
     private CertificateDao certificateDao;
 
     @Autowired
-    private VATScrapper vatScrapper;
+    private VatScrapingService vatScrapingService;
 
-    private Logger logger = LoggerFactory.getLogger(DecodeService.class);
+    private final static Logger logger = LoggerFactory.getLogger(DecodeService.class);
 
     @Autowired
     private ThreadPool threadPool;
 
-
+    // TODO use constructor injection
     public DecodeService() {}
 
 
@@ -109,9 +109,10 @@ public class DecodeService {
                     // NEXT STEP - Scrap for VAT
                     // TODO: avoid static method ?
                     // TODO: better decouple CT scraping from VAT scraping (by keeping state for each task in the DB ?)
-                    // TODO: use Runnable or similar instead of manually creating new threads
 
-                    threadPool.getVATScrapperExecutor().execute(new VATScrapperThread(certificate, vatScrapper));
+                    ThreadPool.getVATScrapperExecutor().execute(new VatSearch(certificate, vatScrapingService));
+
+
                 } catch (NotAValidDomainException e) {
                     // TODO
                     // logger.warn("NotAValidDomainException: {}", e.getMessage());
@@ -187,14 +188,12 @@ public class DecodeService {
 
                 byte[] certBin = Arrays.copyOfRange(extraBin, start + 5, l + start + 5);
 
-                try {
-                    X509CertificateHolder certX = new X509CertificateHolder(certBin);
+                X509CertificateHolder certX = new X509CertificateHolder(certBin);
+                RDN[] commonNames = certX.getSubject().getRDNs(BCStyle.CN);
+
+                if (commonNames.length > 0) {
                     RDN cn = certX.getSubject().getRDNs(BCStyle.CN)[0];
-                    String cns = IETFUtils.valueToString(cn.getFirst().getValue());
-                    return cns;
-                } catch (IOException e) {
-                    // TODO why catch an IndexOutOfBoundsException ??
-                } catch (IndexOutOfBoundsException e) {
+                    return IETFUtils.valueToString(cn.getFirst().getValue());
                 }
             } catch (Exception e) {
                 logger.warn(e.toString());
